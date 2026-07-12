@@ -1,0 +1,182 @@
+<div class="app-layout">
+  <app-sidebar></app-sidebar>
+  <div class="main-content">
+    <app-topbar pageTitle="User Registry" pageSubtitle="Platform User Registry & Account Lifecycle Manager"></app-topbar>
+    <div class="page-body">
+
+      <!-- Stats Grid -->
+      <div class="grid-3 mb-24">
+        <div class="stat-card">
+          <div class="stat-icon-wrap" style="background: #eaf4ff; color: #2980b9;">
+            <span>👥</span>
+          </div>
+          <div class="stat-info">
+            <p>Total Registered Users</p>
+            <h3>{{ userStats.totalUsers }}</h3>
+            <div class="stat-change" style="color: #2980b9;">Database Verified</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrap" style="background: #e8faf6; color: #00b894;">
+            <span>🎓</span>
+          </div>
+          <div class="stat-info">
+            <p>Active Students</p>
+            <h3>{{ userStats.studentsCount }}</h3>
+            <div class="stat-change" style="color: #00b894;">Main Role Allocation</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrap" style="background: #e8e3ff; color: #6C5CE7;">
+            <span>👨‍🏫</span>
+          </div>
+          <div class="stat-info">
+            <p>Active Evaluators</p>
+            <h3>{{ userStats.evaluatorsCount }}</h3>
+            <div class="stat-change" style="color: #6C5CE7;">Assessment Officers</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Lifecycle Manager -->
+      <div class="card w-full mb-24">
+        <div class="flex justify-between items-center mb-16" style="flex-wrap: wrap; gap: 12px;">
+          <h3 class="section-title" style="margin: 0;">👤 Platform User Registry</h3>
+          
+          <!-- Search Field -->
+          <div class="search-input-wrapper">
+            <span class="search-icon">🔍</span>
+            <input 
+              type="text" 
+              placeholder="Search users by name or email..." 
+              [(ngModel)]="searchQuery" 
+              (input)="onSearchChange()" 
+              class="search-field"
+            >
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div class="flex flex-col justify-center items-center py-32" *ngIf="loadingData" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+          <div class="spinner mb-12"></div>
+          <p class="text-muted" style="font-size: 14px; margin-top: 10px;">Loading platform users...</p>
+        </div>
+
+        <!-- Table View -->
+        <div class="table-wrapper" *ngIf="!loadingData">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Streak</th>
+                <th>Level / XP</th>
+                <th>Designated Role</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let u of filteredUsers">
+                <td class="primary">{{ u.firstName }} {{ u.lastName }}</td>
+                <td>{{ u.email }}</td>
+                <td>🔥 {{ u.streak }} days</td>
+                <td>Level {{ u.level }} ({{ u.xp }} XP)</td>
+                <td>
+                  <span class="badge" [ngClass]="u.role === 'ADMIN' ? 'badge-danger' : u.role === 'EVALUATOR' ? 'badge-primary' : 'badge-success'">
+                    {{ u.role }}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-primary btn-sm" (click)="openUserModal(u)">
+                    ⚙️ Manage Account
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="filteredUsers.length === 0">
+                <td colspan="6" style="text-align: center; color: var(--text-light); padding: 20px;">
+                  No registered users found matching your query.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Admin User Promotion Modal -->
+<div class="modal-backdrop" *ngIf="showUserModal">
+  <div class="modal-container user-modal-container">
+    <div class="modal-header">
+      <h3>⚙️ Platform User Account Manager</h3>
+      <button class="close-btn" (click)="closeUserModal()">✕</button>
+    </div>
+    <div class="modal-body" *ngIf="selectedUser">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;" class="mb-16">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input type="text" class="form-control" [(ngModel)]="editFirstName" placeholder="First Name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input type="text" class="form-control" [(ngModel)]="editLastName" placeholder="Last Name">
+        </div>
+      </div>
+
+      <div class="form-group mb-16">
+        <label class="form-label">Email Address</label>
+        <input type="email" class="form-control" [(ngModel)]="editEmail" placeholder="Email Address">
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;" class="mb-16">
+        <div class="form-group">
+          <label class="form-label">Level</label>
+          <input type="number" class="form-control" [(ngModel)]="editLevel" min="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">XP</label>
+          <input type="number" class="form-control" [(ngModel)]="editXp" min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Streak</label>
+          <input type="number" class="form-control" [(ngModel)]="editStreak" min="0">
+        </div>
+      </div>
+
+      <div class="form-group mb-24">
+        <label class="form-label">Account Role</label>
+        <select class="form-control" [(ngModel)]="editRole" [disabled]="selectedUser.email === user?.email">
+          <option value="STUDENT">Student</option>
+          <option value="EVALUATOR">Evaluator (Subject Matter Expert)</option>
+          <option value="ADMIN">System Administrator</option>
+        </select>
+        <small *ngIf="selectedUser.email === user?.email" style="color: var(--text-light); font-size: 11px; margin-top: 4px; display: block;">
+          ⚠️ You cannot change your own Administrator role.
+        </small>
+      </div>
+
+      <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0 16px 0;">
+
+      <!-- Delete Section -->
+      <div *ngIf="selectedUser.email !== user?.email" class="delete-section" style="background: rgba(231, 76, 60, 0.05); padding: 12px 16px; border: 1.5px dashed rgba(231, 76, 60, 0.2); border-radius: var(--radius); box-sizing: border-box;">
+        <p style="font-size: 12px; color: var(--text-secondary); margin: 0 0 10px 0; line-height: 1.4;">
+          <strong>Warning:</strong> Deleting this account will permanently remove their results, streak, and access to this platform.
+        </p>
+        <button class="btn" (click)="deleteUserAccount()" style="width: 100%; background: var(--danger, #e74c3c); color: white; border: none; font-size: 13px; font-weight: 600; padding: 10px; border-radius: var(--radius); cursor: pointer;">
+          🗑️ Delete Account
+        </button>
+      </div>
+      <div *ngIf="selectedUser.email === user?.email" style="background: rgba(0, 0, 0, 0.02); padding: 12px 16px; border: 1px solid var(--border); border-radius: var(--radius); text-align: center; color: var(--text-light); font-size: 12.5px;">
+        🔒 This is your active account. Self-deletion is disabled.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" (click)="closeUserModal()">Cancel</button>
+      <button class="btn btn-primary" (click)="saveUserDetails()">💾 Save Changes</button>
+    </div>
+  </div>
+</div>

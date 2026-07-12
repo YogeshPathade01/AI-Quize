@@ -1,0 +1,47 @@
+.subject-tabs { display:flex; gap:6px; }
+.practice-layout { display:grid; grid-template-columns:1fr 280px; gap:20px; align-items:start; }
+.question-card { padding:28px; }
+.q-counter { font-size:13px; color:var(--text-secondary); font-weight:500; }
+.score-display { font-size:13px; color:var(--text-secondary); }
+.question-text { font-size:17px; font-weight:600; color:var(--text-primary); line-height:1.6; }
+.explanation { background:var(--info-bg); border:1px solid var(--info); border-radius:var(--radius); padding:14px; margin-top:16px; font-size:13px; color:var(--text-primary); line-height:1.6; }
+.q-nav { display:flex; flex-wrap:wrap; gap:6px; }
+.q-nav-dot { width:28px;height:28px;border-radius:7px;background:var(--bg);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--text-secondary);cursor:pointer; }
+.q-nav-dot.current { border-color:var(--primary);background:var(--primary-bg);color:var(--primary); }
+.q-nav-dot.done { border-color:var(--success);background:var(--success-bg);color:var(--success); }
+.stat-row { display:flex;justify-content:space-between;font-size:13px; }
+.score-big { font-size:48px;font-weight:800;font-family:'Poppins',sans-serif; }
+.results-card { max-width:480px;margin:0 auto;padding:48px; }
+
+.ai-generator-card {
+  border: 1.5px dashed rgba(var(--primary-rgb, 108, 93, 211), 0.3);
+  background: linear-gradient(135deg, rgba(var(--primary-rgb, 108, 93, 211), 0.03), rgba(var(--success-rgb, 46, 204, 113), 0.02));
+  padding: 16px 20px;
+}
+.ai-input {
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  background: var(--card-bg, #ffffff);
+  color: var(--text-primary, #1e293b);
+  transition: border-color 0.2s;
+  &:focus {
+    outline: none;
+    border-color: var(--primary, #6c5dd3);
+  }
+}
+.ai-select {
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  background: var(--card-bg, #ffffff);
+  color: var(--text-primary, #1e293b);
+  cursor: pointer;
+  transition: border-color 0.2s;
+  &:focus {
+    outline: none;
+    border-color: var(--primary, #6c5dd3);
+  }
+}

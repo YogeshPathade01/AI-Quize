@@ -1,0 +1,26 @@
+<div class="app-layout"><app-sidebar></app-sidebar><div class="main-content"><app-topbar pageTitle="Upcoming Exams" pageSubtitle="Schedule your preparation"></app-topbar><div class="page-body">
+  <div class="grid-auto">
+    <div class="exam-card card" *ngFor="let exam of exams">
+      <div class="flex justify-between items-center mb-16">
+        <span class="badge badge-primary">{{ exam.subject }}</span>
+        <span class="badge" [ngClass]="getDiffClass(exam.difficulty)">{{ exam.difficulty }}</span>
+      </div>
+      <h3 class="exam-title">{{ exam.title }}</h3>
+      <div class="exam-meta-list mt-12">
+        <div class="meta-item"><span>📅</span><span>{{ exam.date }} • {{ exam.time }}</span></div>
+        <div class="meta-item"><span>⏱️</span><span>{{ exam.duration }} minutes</span></div>
+        <div class="meta-item"><span>❓</span><span>{{ exam.totalQuestions }} questions</span></div>
+        <div class="meta-item"><span>⚡</span><span>{{ exam.maxXP }} XP on completion</span></div>
+        <div class="meta-item"><span>👥</span><span>{{ exam.enrolledCount }} enrolled</span></div>
+      </div>
+      <div class="card-actions mt-20">
+        <button class="btn btn-primary" style="flex:1;" [disabled]="!isStudent() || isEnrolled(exam)" (click)="enroll(exam)">
+          {{ isEnrolled(exam) ? 'Enrolled' : 'Enroll Now' }}
+        </button>
+        <button class="btn btn-ghost" [disabled]="!isStudent()" (click)="toggleReminder(exam)">
+          {{ hasReminder(exam) ? '⏰ Reminder Set' : 'Set Reminder' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div></div></div>

@@ -1,0 +1,89 @@
+<div class="app-layout">
+  <app-sidebar></app-sidebar>
+  <div class="main-content">
+    <app-topbar pageTitle="Exam Orchestration" pageSubtitle="Global Exam Schedule & Platform Assessment Orchestrator"></app-topbar>
+    <div class="page-body">
+
+      <!-- Exam Orchestration Center -->
+      <div class="card w-full">
+        <div class="flex justify-between items-center mb-16" style="flex-wrap: wrap; gap: 12px;">
+          <h3 class="section-title" style="margin: 0;">📅 Global Exam Schedule Orchestrator</h3>
+          
+          <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <!-- Search Field -->
+            <div class="search-input-wrapper">
+              <span class="search-icon">🔍</span>
+              <input 
+                type="text" 
+                placeholder="Search exams by title or subject..." 
+                [(ngModel)]="searchQuery" 
+                (input)="onSearchChange()" 
+                class="search-field"
+              >
+            </div>
+            <button class="btn btn-outline btn-sm" routerLink="/create-exam" style="white-space: nowrap;">➕ Orchestrate Exam</button>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div class="flex flex-col justify-center items-center py-32" *ngIf="loadingData" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+          <div class="spinner mb-12"></div>
+          <p class="text-muted" style="font-size: 14px; margin-top: 10px;">Loading exam schedules...</p>
+        </div>
+
+        <!-- Table View -->
+        <div class="table-wrapper" *ngIf="!loadingData">
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Subject</th>
+                <th>Duration</th>
+                <th>Questions</th>
+                <th>Difficulty</th>
+                <th>Enrolled</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let exam of filteredExams">
+                <td class="primary">{{ exam.title }}</td>
+                <td>{{ exam.subject }}</td>
+                <td>{{ exam.duration }} mins</td>
+                <td>{{ exam.totalQuestions }}</td>
+                <td>
+                  <span class="badge" [ngClass]="exam.difficulty === 'Easy' ? 'badge-success' : exam.difficulty === 'Medium' ? 'badge-warning' : 'badge-danger'">
+                    {{ exam.difficulty }}
+                  </span>
+                </td>
+                <td>{{ exam.enrolledCount }}</td>
+                <td>
+                  <span class="badge" [ngClass]="exam.status === 'live' ? 'badge-live' : exam.status === 'completed' ? 'badge-success' : 'badge-primary'">
+                    {{ exam.status | uppercase }}
+                  </span>
+                </td>
+                <td>
+                  <div style="display: flex; gap: 8px; justify-content: flex-start;">
+                    <button *ngIf="exam.status !== 'completed'" class="btn btn-ghost btn-sm" [routerLink]="['/create-exam']" [queryParams]="{ examId: exam.id }" title="Edit Exam">
+                      📝 Edit
+                    </button>
+                    <button *ngIf="exam.status === 'upcoming'" class="btn btn-ghost btn-sm" (click)="deleteExam(exam)" style="border: 1px solid var(--danger); color: var(--danger);" title="Cancel / Delete Exam">
+                      ❌ Cancel
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="filteredExams.length === 0">
+                <td colspan="8" style="text-align: center; color: var(--text-light); padding: 20px;">
+                  No orchestrated exams found matching your query.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

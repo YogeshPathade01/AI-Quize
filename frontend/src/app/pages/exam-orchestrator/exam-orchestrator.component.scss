@@ -1,0 +1,58 @@
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: 'Poppins', sans-serif;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(108, 93, 211, 0.1);
+  border-top: 3px solid var(--primary, #6c5dd3);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Search Bar Styling */
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 280px;
+
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    font-size: 14px;
+    color: var(--text-light, #94a3b8);
+    pointer-events: none;
+  }
+
+  .search-field {
+    width: 100%;
+    padding: 8px 12px 8px 36px;
+    font-size: 13px;
+    border: 1.5px solid var(--border, #e2e8f0);
+    border-radius: var(--radius, 8px);
+    background: var(--bg, #f8fafc);
+    color: var(--text-primary, #0f172a);
+    outline: none;
+    transition: all 0.2s ease-in-out;
+
+    &::placeholder {
+      color: var(--text-light, #94a3b8);
+    }
+
+    &:focus {
+      border-color: var(--primary, #6c5ce7);
+      background: var(--bg-card, #ffffff);
+      box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+    }
+  }
+}

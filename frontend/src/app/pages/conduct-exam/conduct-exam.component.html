@@ -1,0 +1,94 @@
+<div class="exam-fullscreen-layout" *ngIf="questions.length > 0">
+  
+  <!-- Secure Exam Header -->
+  <div class="secure-exam-header">
+    <div class="header-left">
+      <span class="secure-badge">🛡️ SECURE EXAM MODE</span>
+      <h2 class="exam-title-text">{{ examTitle || 'Assessment Quiz' }}</h2>
+      <span class="exam-subject-badge" *ngIf="examSubject">{{ examSubject }}</span>
+    </div>
+    <div class="header-right">
+      <div class="tab-warn-status" [class.violating]="tabSwitches > 0">
+        ⚠️ Tab Switches: <strong>{{ tabSwitches }}</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="exam-body">
+    
+    <!-- Active Warning Banner -->
+    <div class="exam-security-banner mb-24" *ngIf="!completed">
+      🚨 <strong>Security Audit Active:</strong> Do NOT close this tab, switch windows, or navigate away. All tab switches are logged and flagged to the evaluator.
+    </div>
+
+    <!-- Active Question Attempt Layout (Single-column layout focusing on Question, Time and Progress) -->
+    <div class="focused-exam-container" *ngIf="!completed">
+      
+      <!-- Top Meta Block: Timer, Counters -->
+      <div class="exam-meta-header mb-16">
+        <div class="meta-left">
+          <span class="q-counter">Question {{ currentIndex + 1 }} of {{ questions.length }}</span>
+        </div>
+        <div class="meta-right">
+          <!-- Countdown Clock -->
+          <div class="exam-clock" [class.warning-time]="timeRemaining < 60">
+            <span class="clock-icon">⏱️</span>
+            Time Remaining: <strong class="time-string">{{ formatTime(timeRemaining) }}</strong>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Progress Bar -->
+      <div class="progress mb-24">
+        <div class="progress-bar" [style.width.%]="progress"></div>
+      </div>
+
+      <!-- Question Card -->
+      <div class="question-card card">
+        <!-- Question -->
+        <div class="question-text">{{ currentQ.text }}</div>
+
+        <!-- Options -->
+        <div class="options mt-24">
+          <div class="option-item" *ngFor="let opt of currentQ.options; let i = index"
+            [class.selected]="selectedOption === i"
+            (click)="selectOption(i)">
+            <div class="option-key">{{ ['A','B','C','D'][i] }}</div>
+            <span>{{ opt }}</span>
+          </div>
+        </div>
+
+        <div class="card-footer-actions mt-24 flex justify-between items-center">
+          <span class="text-muted" style="font-size: 13px;">Progress: {{ Math.round(progress) }}%</span>
+          <button class="btn btn-primary" (click)="next()" [disabled]="!answered">
+            {{ currentIndex < questions.length - 1 ? 'Next Question →' : 'Submit Exam' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exam Submission Success View -->
+    <div class="results-card card text-center" *ngIf="completed" style="margin-top: 40px;">
+      <div style="font-size:56px;margin-bottom:12px;">🎉</div>
+      <h2 style="font-size:22px;font-weight:700;margin-bottom:6px;">Exam Submitted!</h2>
+      <div class="score-big text-success" style="font-size: 36px; margin: 16px 0;">Success</div>
+      
+      <div class="card" style="background: rgba(var(--primary-rgb), 0.02); text-align: left; padding: 20px; border-radius: 12px; margin-bottom: 24px; border: 1px solid var(--border);">
+        <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--text-primary);">Submission Details</h4>
+        <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13.5px;">
+          <div style="display: flex; justify-content: space-between;"><span class="text-muted">Exam Title:</span><strong>{{ examTitle }}</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span class="text-muted">Subject:</span><strong>{{ examSubject }}</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span class="text-muted">Auto-Score Recorded:</span><strong>{{ score }} / {{ questions.length }}</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span class="text-muted">Security Incidents (Tab Switches):</span><strong [class.text-danger]="tabSwitches > 0">{{ tabSwitches }}</strong></div>
+        </div>
+      </div>
+      
+      <p class="text-muted mt-8" style="font-size: 13.5px; line-height: 1.5;">
+        Your exam results have been securely recorded. The designated evaluator will moderate your submission and publish your final grades shortly.
+      </p>
+      
+      <button class="btn btn-primary mt-24" style="width: 100%;" routerLink="/dashboard">Back to Dashboard</button>
+    </div>
+
+  </div>
+</div>

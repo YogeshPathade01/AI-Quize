@@ -1,0 +1,51 @@
+<div class="app-layout">
+  <app-sidebar></app-sidebar>
+  <div class="main-content">
+    <app-topbar pageTitle="Completed Exams" pageSubtitle="Archive and performance history of past examinations"></app-topbar>
+    <div class="page-body">
+      
+      <div class="card" *ngIf="exams.length > 0">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Exam</th>
+                <th>Subject</th>
+                <th>Difficulty</th>
+                <th>Date</th>
+                <th>Duration</th>
+                <th>Questions</th>
+                <th>Max XP</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let exam of exams">
+                <td class="primary">{{ exam.title }}</td>
+                <td><span class="badge badge-primary">{{ exam.subject }}</span></td>
+                <td><span class="badge" [ngClass]="getDiffClass(exam.difficulty)">{{ exam.difficulty }}</span></td>
+                <td>{{ exam.date }} • {{ exam.time }}</td>
+                <td>{{ exam.duration }} min</td>
+                <td>{{ exam.totalQuestions }}</td>
+                <td><span style="color:var(--primary);font-weight:600;">{{ exam.maxXP }} XP</span></td>
+                <td><span class="badge badge-success">Completed</span></td>
+                <td>
+                  <a routerLink="/my-results" class="btn btn-ghost btn-sm">View Result</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="empty-state mt-24" *ngIf="exams.length === 0">
+        <div class="icon">✅</div>
+        <h3>No completed exams yet</h3>
+        <p>Finished exams will show up here along with their final evaluation and results.</p>
+        <button class="btn btn-primary mt-16" routerLink="/live-exams">Check Live Exams</button>
+      </div>
+
+    </div>
+  </div>
+</div>

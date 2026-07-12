@@ -1,0 +1,153 @@
+<div class="app-layout">
+  <app-sidebar></app-sidebar>
+  <div class="main-content">
+    <app-topbar [pageTitle]="isEditMode ? 'Exam Editor' : 'Exam Creator'" [pageSubtitle]="isEditMode ? 'Modify existing assessment settings and update question details' : 'Design assessments and configure questions with AI-ready options'"></app-topbar>
+    <div class="page-body">
+      
+      <!-- Notifications -->
+      <div class="alert alert-danger mb-24" *ngIf="error">
+        <span class="alert-icon">⚠️</span>
+        <div class="alert-content">{{ error }}</div>
+      </div>
+
+      <div class="alert alert-success mb-24" *ngIf="success">
+        <span class="alert-icon">🎉</span>
+        <div class="alert-content">{{ success }}</div>
+      </div>
+
+      <!-- Main Form -->
+      <div class="creator-container">
+        
+        <!-- Column 1: Exam Settings -->
+        <div class="card settings-card">
+          <h3 class="section-title mb-16">⚙️ Exam Configuration</h3>
+          
+          <div class="form-group">
+            <label class="form-label">Exam Title</label>
+            <input type="text" class="form-control" [(ngModel)]="exam.title" placeholder="e.g. Advanced Java Concurrency Quiz">
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Subject / Topic</label>
+              <input type="text" class="form-control" [(ngModel)]="exam.subject" placeholder="e.g. Java">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Duration (Minutes)</label>
+              <input type="number" class="form-control" [(ngModel)]="exam.duration" min="1" placeholder="e.g. 45">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Difficulty</label>
+            <select class="form-control" [(ngModel)]="exam.difficulty">
+              <option value="EASY">Easy</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="HARD">Hard</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Scheduled Date & Time</label>
+            <input type="datetime-local" class="form-control" [(ngModel)]="exam.scheduledAt">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description / Instructions</label>
+            <textarea class="form-control" rows="4" [(ngModel)]="exam.description" placeholder="Describe the syllabus, criteria, and guidelines for students taking this exam..."></textarea>
+          </div>
+
+          <div class="summary-box mt-24">
+            <div class="summary-row">
+              <span>Total Questions:</span>
+              <strong>{{ exam.questions.length }}</strong>
+            </div>
+            <div class="summary-row">
+              <span>Expected XP Reward:</span>
+              <strong>{{ exam.questions.length * 10 }} XP</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 2: Questions Editor -->
+        <div class="questions-container">
+          <div class="questions-header mb-16">
+            <h3 class="section-title">📚 Question Pool</h3>
+            <button class="btn btn-outline btn-sm" (click)="addQuestion()">
+              <span>➕</span> Add Question
+            </button>
+          </div>
+
+          <!-- Dynamic Question Cards -->
+          <div class="card question-card mb-20" *ngFor="let q of exam.questions; let i = index">
+            <div class="q-card-header mb-16">
+              <span class="q-badge">Question {{ i + 1 }}</span>
+              <button class="remove-q-btn" (click)="removeQuestion(i)" title="Remove question">🗑️</button>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Question text</label>
+              <input type="text" class="form-control" [(ngModel)]="q.text" placeholder="Enter the query statement...">
+            </div>
+
+            <!-- Options Grid -->
+            <div class="options-grid mb-16">
+              <div class="option-input-wrap" [class.is-correct]="q.correctOptionIndex === 0">
+                <span class="option-label" (click)="q.correctOptionIndex = 0">A</span>
+                <input type="text" class="form-control" [(ngModel)]="q.optionA" placeholder="Option A value">
+              </div>
+              <div class="option-input-wrap" [class.is-correct]="q.correctOptionIndex === 1">
+                <span class="option-label" (click)="q.correctOptionIndex = 1">B</span>
+                <input type="text" class="form-control" [(ngModel)]="q.optionB" placeholder="Option B value">
+              </div>
+              <div class="option-input-wrap" [class.is-correct]="q.correctOptionIndex === 2">
+                <span class="option-label" (click)="q.correctOptionIndex = 2">C</span>
+                <input type="text" class="form-control" [(ngModel)]="q.optionC" placeholder="Option C value">
+              </div>
+              <div class="option-input-wrap" [class.is-correct]="q.correctOptionIndex === 3">
+                <span class="option-label" (click)="q.correctOptionIndex = 3">D</span>
+                <input type="text" class="form-control" [(ngModel)]="q.optionD" placeholder="Option D value">
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">Correct Option</label>
+                <select class="form-control" [(ngModel)]="q.correctOptionIndex">
+                  <option [value]="0">Option A</option>
+                  <option [value]="1">Option B</option>
+                  <option [value]="2">Option C</option>
+                  <option [value]="3">Option D</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Question Difficulty</label>
+                <select class="form-control" [(ngModel)]="q.difficulty">
+                  <option value="EASY">Easy</option>
+                  <option value="MEDIUM">Medium</option>
+                  <option value="HARD">Hard</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group mb-0">
+              <label class="form-label">Explanation (Optional)</label>
+              <textarea class="form-control" rows="2" [(ngModel)]="q.explanation" placeholder="Provide context on why the selected answer is correct..."></textarea>
+            </div>
+          </div>
+
+          <!-- Bottom Action Buttons -->
+          <div class="action-footer mt-24">
+            <button class="btn btn-ghost" routerLink="/dashboard">Cancel</button>
+            <button class="btn btn-primary" (click)="onSubmit()" [disabled]="loading">
+              <span *ngIf="loading" class="spinner-sm"></span>
+              {{ isEditMode ? (loading ? 'Saving Changes...' : '💾 Save Changes') : (loading ? 'Publishing Exam...' : '🚀 Publish Assessment') }}
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,94 @@
+<div class="login-page">
+  <div class="login-left">
+    <div class="brand">
+      <img src="assets/exo_igniter.jpeg" alt="Igniter Quiz Logo" class="brand-icon">
+      <div>
+        <div class="brand-name">EXO IGNITER</div>
+        <div class="brand-sub">AI-Powered Assessment Platform</div>
+      </div>
+    </div>
+    <h2 class="hero-title">Level Up Your <span class="highlight">Knowledge</span> Every Day</h2>
+    <p class="hero-desc">Take exams, earn XP, compete on leaderboards, and track your progress with intelligent analytics.</p>
+    <div class="features">
+      <div class="feature-item"><span>⚡</span> Real-time Live Exams</div>
+      <div class="feature-item"><span>🏆</span> Competitive Leaderboards</div>
+      <div class="feature-item"><span>📊</span> Detailed Result Analytics</div>
+      <div class="feature-item"><span>🔥</span> Daily Streak Rewards</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-bubble"><strong>10K+</strong><span>Students</span></div>
+      <div class="stat-bubble"><strong>500+</strong><span>Exams</span></div>
+      <div class="stat-bubble"><strong>98%</strong><span>Satisfaction</span></div>
+    </div>
+  </div>
+
+  <div class="login-right">
+    <div class="login-card">
+      <div class="card-tabs">
+        <button class="tab-btn" [class.active]="!isRegister" (click)="setTab(false)">Sign In</button>
+        <button class="tab-btn" [class.active]="isRegister" (click)="setTab(true)">Register</button>
+      </div>
+
+      <ng-container *ngIf="!isRegister">
+        <h3 class="form-title">Welcome back!</h3>
+        <p class="form-sub">Sign in to continue your learning journey</p>
+        <div class="form-group mt-20">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-control" [(ngModel)]="email" placeholder="rahul@example.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="pass-wrap">
+            <input [type]="showPass ? 'text' : 'password'" class="form-control" [(ngModel)]="password" placeholder="••••••••">
+            <button class="show-pass" (click)="showPass=!showPass">{{ showPass ? '🙈' : '👁' }}</button>
+          </div>
+        </div>
+        <div class="forgot-row">
+          <a href="#" class="link" [class.disabled]="forgotLoading" (click)="forgotPassword($event)">
+            {{ forgotLoading ? 'Sending link...' : 'Forgot password?' }}
+          </a>
+        </div>
+        <div class="error-msg" *ngIf="error">{{ error }}</div>
+        <button class="btn btn-primary btn-block btn-lg mt-20" (click)="submit()" [disabled]="loading">
+          {{ loading ? 'Signing in...' : 'Sign In →' }}
+        </button>
+        <div class="divider"><span>or</span></div>
+        <div id="googleBtn" style="display: flex; justify-content: center; margin-top: 12px; min-height: 44px; width: 100%;"></div>
+      </ng-container>
+
+      <ng-container *ngIf="isRegister">
+        <h3 class="form-title">Create Account</h3>
+        <p class="form-sub">Join thousands of students already learning</p>
+        <div class="form-row mt-20">
+          <div class="form-group">
+            <label class="form-label">First Name</label>
+            <input type="text" class="form-control" [(ngModel)]="firstName" placeholder="Rahul">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name</label>
+            <input type="text" class="form-control" [(ngModel)]="lastName" placeholder="Verma">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-control" [(ngModel)]="email" placeholder="rahul@example.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-control" [(ngModel)]="password" placeholder="Create a strong password">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Account Role</label>
+          <select class="form-control" [(ngModel)]="role">
+            <option value="STUDENT">Student</option>
+            <option value="EVALUATOR">Examiner / Teacher</option>
+          </select>
+        </div>
+        <div class="error-msg" *ngIf="error" style="color: var(--danger); margin-bottom: 12px; font-weight: 500;">{{ error }}</div>
+        <button class="btn btn-primary btn-block btn-lg mt-12" (click)="submit()" [disabled]="loading">
+          {{ loading ? 'Creating...' : 'Create Account →' }}
+        </button>
+      </ng-container>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,115 @@
+<div class="app-layout"><app-sidebar></app-sidebar><div class="main-content"><app-topbar pageTitle="Profile" pageSubtitle="Manage your account"></app-topbar><div class="page-body" *ngIf="user">
+
+  <!-- Profile Banner -->
+  <div class="profile-banner card mb-24">
+    <div class="banner-bg"></div>
+    <div class="banner-content">
+      <div class="profile-avatar">{{ getInitials(user.name) }}</div>
+      <div class="profile-info">
+        <h2>{{ user.name }}</h2>
+        <p>{{ user.email }}</p>
+        <div class="profile-badges">
+          <span class="badge badge-primary">Level {{ user.level }}</span>
+          <span class="badge badge-warning">🔥 {{ user.streak }}-day streak</span>
+          <span class="badge badge-success">⚡ {{ user.xp }} XP</span>
+        </div>
+      </div>
+      <button class="btn btn-outline btn-sm" (click)="startEdit()">✏️ Edit Profile</button>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <!-- Left -->
+    <div style="display:flex;flex-direction:column;gap:20px;">
+      <!-- XP Progress -->
+      <div class="card">
+        <h3 class="section-label">⚡ Level Progress</h3>
+        <div class="level-display">
+          <div class="level-circle">{{ user.level }}</div>
+          <div style="flex:1;">
+            <div class="flex justify-between mb-8" style="font-size:12px;color:var(--text-secondary);">
+              <span>{{ user.xp }} XP</span><span>2,000 XP</span>
+            </div>
+            <div class="progress" style="height:10px;"><div class="progress-bar" [style.width.%]="xpProgress()"></div></div>
+            <div style="font-size:12px;color:var(--primary);font-weight:600;margin-top:6px;">{{ xpToNextLevel() }} XP to Level {{ user.level + 1 }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="card">
+        <h3 class="section-label">📊 Overall Stats</h3>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-top:12px;">
+          <div class="flex justify-between"><span class="text-muted">Total Exams</span><strong>12</strong></div>
+          <div class="flex justify-between"><span class="text-muted">Exams Passed</span><strong style="color:var(--success)">10</strong></div>
+          <div class="flex justify-between"><span class="text-muted">Avg Accuracy</span><strong style="color:var(--primary)">78%</strong></div>
+          <div class="flex justify-between"><span class="text-muted">Best Rank</span><strong style="color:var(--warning)">#2</strong></div>
+          <div class="flex justify-between"><span class="text-muted">Total XP</span><strong style="color:var(--primary)">{{ user.xp }}</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right -->
+    <div style="display:flex;flex-direction:column;gap:20px;">
+      <div class="card">
+        <h3 class="section-label">📚 Subject Performance</h3>
+        <div style="display:flex;flex-direction:column;gap:14px;margin-top:14px;">
+          <div *ngFor="let s of subjects">
+            <div class="flex justify-between mb-8" style="font-size:13px;">
+              <span class="fw-600">{{ s.name }}</span>
+              <span [style.color]="s.color" class="fw-600">{{ s.pct }}%</span>
+            </div>
+            <div class="progress"><div class="progress-bar" [style.width.%]="s.pct" [style.background]="s.color"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="section-label">🕐 Recent Activity</h3>
+        <div style="display:flex;flex-direction:column;gap:0;margin-top:14px;">
+          <div *ngFor="let a of recentActivity" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);">
+            <div>
+              <div style="font-size:13px;font-weight:500;color:var(--text-primary);">{{ a.text }}</div>
+              <div style="font-size:11px;color:var(--text-light);">{{ a.date }}</div>
+            </div>
+            <span style="color:var(--success);font-weight:700;font-size:13px;">+{{ a.xp }} XP</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Profile Modal Overlay -->
+  <div class="modal-backdrop" *ngIf="editMode" (click)="editMode=false">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">✏️ Edit Profile</h3>
+        <button class="close-btn" (click)="editMode=false">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-sub">Update your display information and username.</p>
+        
+        <div class="form-group mt-16">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-control" [(ngModel)]="editName" [disabled]="loading" placeholder="e.g. Rahul Verma">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-control" [value]="user.email" disabled>
+          <small class="form-help">Email address cannot be changed.</small>
+        </div>
+
+        <div class="error-msg" *ngIf="error" style="margin-bottom: 12px; margin-top: 0;">{{ error }}</div>
+        <div class="success-msg" *ngIf="success" style="background: rgba(46, 204, 113, 0.15); color: #2ecc71; padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 12px;">{{ success }}</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost btn-sm" (click)="editMode=false" [disabled]="loading">Cancel</button>
+        <button class="btn btn-primary btn-sm" (click)="saveChanges()" [disabled]="loading">
+          {{ loading ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div></div></div>

@@ -1,0 +1,24 @@
+<div class="app-layout"><app-sidebar></app-sidebar><div class="main-content"><app-topbar pageTitle="Live Exams" pageSubtitle="Join active exams happening right now"></app-topbar><div class="page-body">
+  <div class="live-banner"><span class="live-dot"></span><strong>{{ liveExams.length }} exams are LIVE right now!</strong> Join before time runs out.</div>
+  <div class="grid-auto mt-20">
+    <div class="exam-card" *ngFor="let exam of liveExams">
+      <div class="card-top">
+        <span class="badge badge-live">🔴 LIVE</span>
+        <span class="badge" [ngClass]="getDiffClass(exam.difficulty)">{{ exam.difficulty }}</span>
+      </div>
+      <h3 class="exam-title">{{ exam.title }}</h3>
+      <p class="exam-subject">{{ exam.subject }}</p>
+      <div class="exam-meta-list">
+        <div class="meta-item"><span>⏱️</span><span>{{ exam.duration }} minutes</span></div>
+        <div class="meta-item"><span>❓</span><span>{{ exam.totalQuestions }} questions</span></div>
+        <div class="meta-item"><span>⚡</span><span>{{ exam.maxXP }} XP max</span></div>
+        <div class="meta-item"><span>👥</span><span>{{ exam.enrolledCount }} enrolled</span></div>
+      </div>
+      <button *ngIf="!isExamCompleted(exam.id)" class="btn btn-primary btn-block mt-16" [routerLink]="['/conduct-exam']" [queryParams]="{ examId: exam.id }">Join Now →</button>
+      <button *ngIf="isExamCompleted(exam.id)" class="btn btn-secondary btn-block mt-16" disabled style="background: rgba(0,0,0,0.05); color: var(--text-light); cursor: not-allowed; border: 1px solid var(--border);">Submitted ✓</button>
+    </div>
+  </div>
+  <div class="empty-state mt-24" *ngIf="liveExams.length === 0">
+    <div class="icon">🔴</div><p>No live exams at the moment. Check back soon!</p>
+  </div>
+</div></div></div>

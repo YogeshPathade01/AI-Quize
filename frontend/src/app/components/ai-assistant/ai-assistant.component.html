@@ -1,0 +1,59 @@
+<!-- AI Assistant Drawer Overlay -->
+<div class="ai-drawer-overlay" [class.open]="isOpen" (click)="close()"></div>
+
+<!-- Drawer Panel -->
+<div class="ai-drawer" [class.open]="isOpen">
+  <!-- Header -->
+  <div class="ai-header">
+    <div class="ai-title">
+      <span class="ai-avatar-icon">🤖</span>
+      <div>
+        <h4>Exo Igniter AI Tutor</h4>
+        <p>Personal Learning Assistant</p>
+      </div>
+    </div>
+    <div class="ai-actions">
+      <button class="action-btn" (click)="resetChat()" title="Reset Conversation">🔄</button>
+      <button class="close-btn" (click)="close()" title="Close Panel">✕</button>
+    </div>
+  </div>
+
+  <!-- Chat Area -->
+  <div class="chat-container" #chatScroll>
+    <div class="chat-messages">
+      <div *ngFor="let msg of chatHistory" class="message-bubble-wrapper" [class.user]="msg.role === 'user'">
+        <div class="message-sender-avatar" *ngIf="msg.role === 'model'">🤖</div>
+        <div class="message-sender-avatar" *ngIf="msg.role === 'user'">👤</div>
+        <div class="message-bubble" [class.ai-bubble]="msg.role === 'model'" [class.user-bubble]="msg.role === 'user'">
+          <div [innerHTML]="msg.formattedText"></div>
+        </div>
+      </div>
+
+      <!-- Typing Indicator -->
+      <div class="message-bubble-wrapper" *ngIf="loading">
+        <div class="message-sender-avatar">🤖</div>
+        <div class="message-bubble ai-bubble typing-indicator">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Input Bar -->
+  <div class="ai-input-bar">
+    <form (ngSubmit)="sendMessage()" style="display: flex; gap: 8px; width: 100%;">
+      <input 
+        type="text" 
+        [(ngModel)]="userInput" 
+        name="userInput"
+        placeholder="Ask a follow-up or query about the choices..." 
+        [disabled]="loading"
+        autocomplete="off" />
+      <button type="submit" class="send-btn" [disabled]="!userInput.trim() || loading">
+        <span>✈️</span>
+      </button>
+    </form>
+  </div>
+</div>

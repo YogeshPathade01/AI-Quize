@@ -1,0 +1,99 @@
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="menu-btn">☰</button>
+    <div>
+      <h1 class="page-title">{{ pageTitle }}</h1>
+      <p class="page-subtitle" *ngIf="pageSubtitle">{{ pageSubtitle }}</p>
+    </div>
+  </div>
+
+  <div class="topbar-search">
+    <span class="search-icon">🔍</span>
+    <input type="text" placeholder="Search exams, topics..." [(ngModel)]="searchQuery" (input)="onSearchChange()" class="search-input">
+    <button class="clear-search-btn" *ngIf="searchQuery.length > 0" (click)="clearSearch()">×</button>
+    
+    <!-- Search Results Dropdown -->
+    <div class="search-results-dropdown" *ngIf="showSearchResults">
+      <!-- Section: Exams -->
+      <ng-container *ngIf="searchResults.exams.length > 0">
+        <div class="search-section-title">Exams</div>
+        <div class="search-result-item" *ngFor="let e of searchResults.exams" [routerLink]="e.status === 'live' ? '/live-exams' : '/upcoming-exams'" (click)="clearSearch()">
+          <span class="result-icon">📝</span>
+          <div class="result-details">
+            <div class="result-name">{{ e.title }}</div>
+            <div class="result-meta">
+              {{ e.subject }} • <span class="badge" [class.badge-live]="e.status === 'live'" [class.badge-primary]="e.status === 'upcoming'">{{ e.status | uppercase }}</span>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      
+      <!-- Section: Topics -->
+      <ng-container *ngIf="searchResults.subjects.length > 0">
+        <div class="search-section-title">Topics</div>
+        <div class="search-result-item" *ngFor="let sub of searchResults.subjects" [routerLink]="['/practice-mcq']" [queryParams]="{ aiTopic: sub }" (click)="clearSearch()">
+          <span class="result-icon">⚡</span>
+          <div class="result-details">
+            <div class="result-name">AI Quiz: {{ sub }}</div>
+            <div class="result-meta">AI-Generated Mock Quiz</div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <div class="streak-badge" *ngIf="user && user.role !== 'ADMIN' && user.role !== 'EVALUATOR'">
+      <span>🔥</span>
+      <span class="streak-text">Streak {{ user.streak }}</span>
+    </div>
+
+    <div class="notif-wrapper">
+      <div class="notif-btn" (click)="toggleNotifications($event)">
+        <span>🔔</span>
+        <span class="notif-count" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+      </div>
+
+      <!-- Dropdown -->
+      <div class="notif-dropdown" *ngIf="showNotifications">
+        <div class="notif-header">
+          <h3>Notifications</h3>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <button class="mark-read-btn" (click)="markAllAsRead()" *ngIf="unreadCount > 0">Mark all as read</button>
+            <button class="close-notif-btn" (click)="showNotifications = false" title="Close">×</button>
+          </div>
+        </div>
+        <div class="notif-body">
+          <div class="notif-list" *ngIf="notifications.length > 0">
+            <div class="notif-item" 
+                 *ngFor="let item of notifications" 
+                 [class.unread]="!item.read" 
+                 (click)="markAsRead(item)">
+              <div class="notif-icon-wrap" [class]="item.type">
+                <span>{{ item.icon }}</span>
+              </div>
+              <div class="notif-content">
+                <div class="notif-title">{{ item.title }}</div>
+                <div class="notif-msg">{{ item.message }}</div>
+                <div class="notif-time">{{ item.time }}</div>
+              </div>
+              <button class="notif-dismiss" (click)="dismissNotification(item, $event)" title="Dismiss">×</button>
+            </div>
+          </div>
+          <div class="notif-empty" *ngIf="notifications.length === 0">
+            <span class="empty-icon">📭</span>
+            <p>You're all caught up!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="user-info" *ngIf="user" routerLink="/profile">
+      <div class="user-avatar">{{ getInitials(user.name) }}</div>
+      <div class="user-details">
+        <div class="user-name">{{ user.name }}</div>
+        <div class="user-level">Level {{ user.level }} ▾</div>
+      </div>
+    </div>
+  </div>
+</header>

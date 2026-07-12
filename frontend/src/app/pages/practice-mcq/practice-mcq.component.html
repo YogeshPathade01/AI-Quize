@@ -1,0 +1,116 @@
+<div class="app-layout"><app-sidebar></app-sidebar><div class="main-content"><app-topbar pageTitle="AI Mock Quiz" pageSubtitle="Generate a personalized practice quiz on any topic instantly using Gemini AI"></app-topbar><div class="page-body">
+
+
+  <!-- AI Quiz Generator Card -->
+  <div class="card mb-24 ai-generator-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+      <div>
+        <h3 style="font-size: 16px; font-weight: 700; margin: 0; color: var(--primary); display: flex; align-items: center; gap: 8px;">
+          <span>⚡</span> AI Mock Quiz Generator
+        </h3>
+        <p class="text-muted" style="margin: 4px 0 0; font-size: 12px;">Generate a personalized practice quiz on any topic instantly using Gemini AI</p>
+      </div>
+      <form (ngSubmit)="generateAiQuiz()" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 0;">
+        <input type="text" [(ngModel)]="aiTopic" name="aiTopic" placeholder="e.g. React Hooks, Docker, Git" class="ai-input" required style="max-width: 200px;" />
+        <select [(ngModel)]="aiDifficulty" name="aiDifficulty" class="ai-select">
+          <option value="Easy">Easy</option>
+          <option value="Medium">Medium</option>
+          <option value="Hard">Hard</option>
+        </select>
+        <select [(ngModel)]="aiNumQuestions" name="aiNumQuestions" class="ai-select">
+          <option [ngValue]="3">3 Questions</option>
+          <option [ngValue]="5">5 Questions</option>
+          <option [ngValue]="10">10 Questions</option>
+        </select>
+        <button type="submit" class="btn btn-primary" [disabled]="!aiTopic.trim() || generatingQuiz" style="padding: 8px 16px; font-size: 13px;">
+          <span *ngIf="generatingQuiz">Generating...</span>
+          <span *ngIf="!generatingQuiz">⚡ Generate</span>
+        </button>
+      </form>
+    </div>
+    <div class="text-danger mt-8" style="font-size: 12px;" *ngIf="aiGenerationError">
+      ⚠️ {{ aiGenerationError }}
+    </div>
+  </div>
+
+  <div class="practice-layout" *ngIf="!completed && questions.length > 0">
+    <div class="question-card card">
+      <!-- Progress -->
+      <div class="flex justify-between items-center mb-12">
+        <span class="q-counter">Question {{ currentIndex + 1 }} of {{ questions.length }}</span>
+        <span class="score-display">Score: <strong style="color:var(--primary)">{{ score }}</strong></span>
+      </div>
+      <div class="progress mb-20"><div class="progress-bar" [style.width.%]="progress"></div></div>
+
+      <!-- Question -->
+      <div class="question-text">{{ currentQ.text }}</div>
+
+      <!-- Options -->
+      <div class="options mt-20">
+        <div class="option-item" *ngFor="let opt of currentQ.options; let i = index"
+          [class.selected]="selectedOption===i && !answered"
+          [class.correct]="answered && isCorrect(i)"
+          [class.wrong]="isWrong(i)"
+          (click)="selectOption(i)">
+          <div class="option-key">{{ ['A','B','C','D'][i] }}</div>
+          <span>{{ opt }}</span>
+          <span *ngIf="answered && isCorrect(i)" style="margin-left:auto;color:var(--success);">✓</span>
+          <span *ngIf="isWrong(i)" style="margin-left:auto;color:var(--danger);">✗</span>
+        </div>
+      </div>
+
+      <!-- Explanation -->
+      <div class="explanation" *ngIf="answered && currentQ.explanation">
+        <strong>💡 Explanation:</strong> {{ currentQ.explanation }}
+        <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+          <button class="btn btn-secondary btn-sm" (click)="explainWithAi()" style="background: rgba(108, 93, 211, 0.1); color: var(--primary); border: 1px solid rgba(108, 93, 211, 0.2); font-size: 12px; padding: 6px 12px; display: flex; align-items: center; gap: 6px;">
+            🤖 Discuss with AI Tutor
+          </button>
+        </div>
+      </div>
+
+      <button class="btn btn-primary mt-20" (click)="next()" [disabled]="!answered" style="float:right;">
+        {{ currentIndex < questions.length - 1 ? 'Next Question →' : 'See Results' }}
+      </button>
+    </div>
+
+    <!-- Side Panel -->
+    <div class="side-panel">
+      <div class="card mb-16">
+        <h4 style="font-size:14px;font-weight:700;margin-bottom:14px;">Question Navigator</h4>
+        <div class="q-nav">
+          <div *ngFor="let q of questions; let i=index" class="q-nav-dot"
+            [class.current]="i===currentIndex"
+            [class.done]="i<currentIndex">{{ i+1 }}</div>
+        </div>
+      </div>
+      <div class="card">
+        <h4 style="font-size:14px;font-weight:700;margin-bottom:14px;">Session Stats</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div class="stat-row"><span class="text-muted">Answered</span><span class="fw-600">{{ currentIndex }}/{{ questions.length }}</span></div>
+          <div class="stat-row"><span class="text-muted">Correct</span><span class="fw-600 text-success">{{ score }}</span></div>
+          <div class="stat-row"><span class="text-muted">Wrong</span><span class="fw-600 text-danger">{{ currentIndex - score }}</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="results-card card text-center" *ngIf="completed">
+    <div style="font-size:56px;margin-bottom:12px;">{{ score >= questions.length * 0.8 ? '🎉' : score >= questions.length * 0.5 ? '👍' : '📚' }}</div>
+    <h2 style="font-size:22px;font-weight:700;margin-bottom:6px;">Practice Complete!</h2>
+    <div class="score-big" [style.color]="getScoreColor()">{{ score }} / {{ questions.length }}</div>
+    <p class="text-muted mt-8">{{ score >= questions.length * 0.8 ? 'Excellent work! Keep it up!' : score >= questions.length * 0.5 ? 'Good job! Keep practicing.' : 'Keep studying, you\'ll improve!' }}</p>
+    <button class="btn btn-primary mt-20" (click)="reset()">Try Again</button>
+  </div>
+
+  <!-- AI Chat Assistant Panel -->
+  <app-ai-assistant
+    *ngIf="questions.length > 0"
+    [questionText]="currentQ.text"
+    [options]="currentQ.options"
+    [correctIndex]="currentQ.correctIndex"
+    [selectedIndex]="selectedOption">
+  </app-ai-assistant>
+
+</div></div></div>

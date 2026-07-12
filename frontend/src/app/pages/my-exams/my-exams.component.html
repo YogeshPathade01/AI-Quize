@@ -1,0 +1,21 @@
+<div class="app-layout"><app-sidebar></app-sidebar><div class="main-content"><app-topbar pageTitle="My Exams" pageSubtitle="All your attempted exams"></app-topbar><div class="page-body">
+  <div class="card">
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Exam</th><th>Subject</th><th>Date</th><th>Duration</th><th>Questions</th><th>Max XP</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let exam of exams">
+            <td class="primary">{{ exam.title }}</td>
+            <td><span class="badge badge-primary">{{ exam.subject }}</span></td>
+            <td>{{ exam.date }}</td>
+            <td>{{ exam.duration }} min</td>
+            <td>{{ exam.totalQuestions }}</td>
+            <td><span style="color:var(--primary);font-weight:600;">{{ exam.maxXP }} XP</span></td>
+            <td><span class="badge badge-success">Completed</span></td>
+            <td><a routerLink="/my-results" class="btn btn-ghost btn-sm">View Result</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div></div></div>

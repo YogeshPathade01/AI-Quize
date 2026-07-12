@@ -1,0 +1,33 @@
+<div class="app-layout"><app-sidebar></app-sidebar><div class="main-content"><app-topbar pageTitle="My Results" pageSubtitle="Track your performance history"></app-topbar><div class="page-body">
+  <div class="grid-3 mb-24">
+    <div class="stat-card"><div class="stat-icon-wrap" style="background:#e8e3ff;"><span>📋</span></div><div class="stat-info"><p>Total Exams</p><h3>{{ results.length }}</h3></div></div>
+    <div class="stat-card"><div class="stat-icon-wrap" style="background:#e8faf6;"><span>🎯</span></div><div class="stat-info"><p>Average Score</p><h3>{{ avgScore }}%</h3></div></div>
+    <div class="stat-card"><div class="stat-icon-wrap" style="background:#fff4e0;"><span>⚡</span></div><div class="stat-info"><p>Total XP Earned</p><h3>{{ totalXP }}</h3></div></div>
+  </div>
+  <div class="card">
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:20px;">Exam History</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Exam</th><th>Date</th><th>Score</th><th>Percentage</th><th>Rank</th><th>Time</th><th>XP Earned</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let r of results">
+            <td class="primary">{{ r.examTitle }}</td>
+            <td>{{ r.date }}</td>
+            <td>{{ r.score }}/{{ r.total }}</td>
+            <td>
+              <div class="score-wrap">
+                <div class="progress" style="width:80px;display:inline-block;vertical-align:middle;margin-right:6px;">
+                  <div class="progress-bar" [style.width.%]="r.percentage" [style.background]="getScoreColor(r.percentage)"></div>
+                </div>
+                <span [style.color]="getScoreColor(r.percentage)" class="fw-600">{{ r.percentage }}%</span>
+              </div>
+            </td>
+            <td><span *ngIf="r.rank" class="badge" [ngClass]="r.rank<=3?'badge-warning':'badge-primary'">#{{ r.rank }}</span></td>
+            <td>{{ r.timeTaken }}</td>
+            <td><span style="color:var(--success);font-weight:700;">+{{ r.xpEarned }} XP</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div></div></div>

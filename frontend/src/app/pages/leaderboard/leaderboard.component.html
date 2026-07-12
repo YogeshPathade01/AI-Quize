@@ -1,0 +1,51 @@
+<div class="app-layout"><app-sidebar></app-sidebar><div class="main-content"><app-topbar pageTitle="Leaderboard" pageSubtitle="Compete with top performers"></app-topbar><div class="page-body">
+
+  <!-- Podium -->
+  <div class="podium-card card mb-24" *ngIf="top3.length >= 3">
+    <h3 class="podium-title">🏆 Top Performers</h3>
+    <div class="podium">
+      <div *ngFor="let p of getPodiumOrder()" class="podium-slot">
+        <div class="medal">{{ getMedalEmoji(p.rank) }}</div>
+        <div class="p-avatar" [class.gold]="p.rank===1" [class.silver]="p.rank===2" [class.bronze]="p.rank===3" [class.is-me]="p.isMe">{{ p.avatar }}</div>
+        <div class="p-name">{{ p.name }}</div>
+        <div class="p-xp">{{ p.xp | number }} XP</div>
+        <div class="p-stand" [class.gold]="p.rank===1" [class.silver]="p.rank===2" [class.bronze]="p.rank===3" [style.height]="getPodiumHeight(p.rank)">
+          <span class="p-rank">#{{ p.rank }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="card">
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:20px;">Full Rankings</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Rank</th><th>Student</th><th>XP</th><th>Streak</th><th>Exams</th><th>Accuracy</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let p of players" [class.my-row]="p.isMe">
+            <td><span class="rank-badge" [class.gold]="p.rank===1" [class.silver]="p.rank===2" [class.bronze]="p.rank===3">{{ p.rank<=3 ? getMedalEmoji(p.rank) : '#'+p.rank }}</span></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="t-avatar" [class.is-me]="p.isMe">{{ p.avatar }}</div>
+                <div>
+                  <div class="primary fw-600">{{ p.name }}</div>
+                  <div *ngIf="p.isMe" style="font-size:11px;color:var(--primary);font-weight:600;">You</div>
+                </div>
+              </div>
+            </td>
+            <td><span style="color:var(--primary);font-weight:700;">{{ p.xp | number }} XP</span></td>
+            <td><span style="color:var(--danger);">🔥 {{ p.streak }} days</span></td>
+            <td>{{ p.exams }}</td>
+            <td>
+              <div class="flex items-center gap-8">
+                <div class="progress" style="width:60px;"><div class="progress-bar" [style.width.%]="p.accuracy"></div></div>
+                <span class="fw-600">{{ p.accuracy }}%</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div></div></div>
